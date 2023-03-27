@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-const gameUrl = "http://127.0.0.1:4000/game";
+const gameUrl = "http://127.0.0.1:4000/playerId";
 
 const Home = () => {
   const [gameId, setGameId] = useState("");
@@ -14,11 +14,11 @@ const Home = () => {
     if (id) {
       setPlayerId(id);
     } else {
-      getPlayerId();
+      fetchPlayerId();
     }
   }, []);
 
-  const getPlayerId = async () => {
+  const fetchPlayerId = async () => {
     try {
       const response = await fetch(gameUrl);
       const data = await response.json();
@@ -35,7 +35,6 @@ const Home = () => {
     // const response = await fetch(gameUrl, { method: "POST" });
     const response = await fetch(gameUrl);
     const { playerId } = await response.json();
-    console.log(playerId);
     localStorage.setItem("playerId", playerId);
   };
 
