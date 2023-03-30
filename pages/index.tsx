@@ -47,8 +47,28 @@ const Home = () => {
     }
   };
 
-  const handleJoinRoom = () => {
-    router.push(`/game/${gameId}`);
+  const handleJoinGame = async () => {
+    const bodyData = {
+      playerId: playerId,
+      roomId: roomId,
+    };
+
+    try {
+      const response = await fetch(mainURL + "game/join", {
+        method: "POST",
+        body: JSON.stringify(bodyData),
+      });
+
+      if (response.status === 404) {
+        console.log("Game room doesn't exist");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      if (roomId === data.roomId) router.push(`/game/${roomId}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleRoomIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +94,7 @@ const Home = () => {
             value={roomId}
             onChange={handleRoomIdChange}
           />
-          <button onClick={handleJoinRoom}>Join Room</button>
+          <button onClick={handleJoinGame}>Join Room</button>
         </div>
       </div>
     </>
