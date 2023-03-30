@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 const mainURL = "http://127.0.0.1:4000/";
 
 const Home = () => {
-  const [gameId, setGameId] = useState("");
+  const [roomId, setRoomId] = useState("");
   const [playerId, setPlayerId] = useState<String | null>(null);
   const router = useRouter();
 
@@ -32,10 +32,19 @@ const Home = () => {
   };
 
   const handleCreateGame = async () => {
-    // const response = await fetch(gameUrl, { method: "POST" });
-    const response = await fetch(mainURL + "game/create");
-    const { playerId } = await response.json();
-    localStorage.setItem("playerId", playerId);
+    try {
+      const response = await fetch(mainURL + "game/create", {
+        method: "POST",
+        body: JSON.stringify(playerId),
+      });
+
+      const data = await response.json();
+      const roomId = await data.roomId;
+      console.log(roomId);
+      router.push(`/game/${roomId}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleJoinRoom = () => {
@@ -43,7 +52,7 @@ const Home = () => {
   };
 
   const handleRoomIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setGameId(event.target.value);
+    setRoomId(event.target.value);
   };
 
   return (
@@ -62,7 +71,7 @@ const Home = () => {
           <input
             type="text"
             id="game-id"
-            value={gameId}
+            value={roomId}
             onChange={handleRoomIdChange}
           />
           <button onClick={handleJoinRoom}>Join Room</button>
