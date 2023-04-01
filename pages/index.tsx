@@ -1,35 +1,15 @@
 import Head from "next/head";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
+import { useUserId } from "@/hooks/useUserID";
 
 const mainURL = "http://127.0.0.1:4000/";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("");
-  const [playerId, setPlayerId] = useState<String | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    const id = localStorage.getItem("playerId");
-    if (id) {
-      setPlayerId(id);
-    } else {
-      fetchPlayerId();
-    }
-  }, []);
-
-  const fetchPlayerId = async () => {
-    try {
-      const response = await fetch(mainURL + "playerId");
-      const data = await response.json();
-      const id = await data.playerId;
-      setPlayerId(id);
-      localStorage.setItem("playerId", id);
-    } catch (error) {
-      //TODO: better error handling
-      console.log(error);
-    }
-  };
+  const playerId = useUserId();
+  console.log(playerId);
 
   const handleCreateGame = async () => {
     try {
@@ -63,8 +43,13 @@ const Home = () => {
         console.log("Game room doesn't exist");
       }
 
+      if (response.status === 401) {
+        console.log("Game already has two players");
+      }
+
       const data = await response.json();
       console.log(data);
+      // if (roomId === data.roomId) router.push(`/game/${roomId}`);
       if (roomId === data.roomId) router.push(`/game/${roomId}`);
     } catch (error) {
       console.log(error);
